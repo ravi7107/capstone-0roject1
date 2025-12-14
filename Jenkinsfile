@@ -8,7 +8,6 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                // Checkout the branch that triggered the pipeline
                 git branch: "${env.BRANCH_NAME ?: 'master'}", url: 'https://github.com/ravi7107/capstone-0roject1.git'
             }
         }
@@ -21,15 +20,15 @@ pipeline {
 
         stage('Test') {
             steps {
-                sh 'echo "Running tests..."'
-                // Replace with your actual test script if you have one
+                echo "Running tests..."
+                // Replace with your test script if available
                 sh './run_tests.sh || echo "Tests completed"'
             }
         }
 
         stage('Deploy to Prod') {
             when {
-                branch 'master' // Only deploy if branch is master
+                branch 'master'
             }
             steps {
                 echo "Deploying to Production..."
