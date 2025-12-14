@@ -2,29 +2,31 @@ pipeline {
     agent any
     environment {
         IMAGE_NAME = "webapp:latest"
+        APP_DIR = "/var/www/html"
     }
     stages {
         stage('Checkout') {
-            when { branch 'master' }
             steps {
-                git branch: 'master', url: 'https://github.com/ravi7107/capstone-0roject1.git'
+                checkout scm
             }
         }
-        stage('Deploy to Prod') {
-            when { branch 'master' }
+        stage('Deploy to Production') {
+            when {
+                branch 'master' // Only deploy for master
+            }
             steps {
-                sh '''
-                    echo "Deploying to production..."
-                    docker stop webapp || true
-                    docker rm webapp || true
-                    docker run -d --name webapp -p 80:80 $IMAGE_NAME
-                '''
+                echo "Deploying to production..."
+                sh """
+                   docker stop webapp || true
+                   docker rm webapp || true
+                   docker run -d --name webapp -p 80:80 -v $APP_DIR:/usr/share/nginx/html $IMAGE_NAME
+                """
             }
         }
     }
     post {
-        success {
-            echo "Deployment completed successfully."
+        always {
+            echo "Deployment stage finished for branch ${env.BRANCH_NAME}"
         }
         failure {
             echo "Deployment failed!"

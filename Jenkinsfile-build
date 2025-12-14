@@ -1,26 +1,29 @@
 pipeline {
     agent any
     environment {
-        IMAGE_NAME = "webapp:latest"
+        IMAGE_NAME = "hshar/webapp:latest"
+        APP_DIR = "/var/www/html"
     }
     stages {
         stage('Checkout') {
             steps {
-                git branch: "${env.BRANCH_NAME}", url: 'https://github.com/ravi7107/capstone-0roject1.git'
+                checkout scm
             }
         }
         stage('Build Docker Image') {
             steps {
-                sh '''
-                    echo "Building Docker image..."
-                    docker build -t $IMAGE_NAME .
-                '''
+                echo "Building Docker image..."
+                sh """
+                   mkdir -p $APP_DIR
+                   docker pull $IMAGE_NAME
+                   docker build -t webapp:latest .
+                """
             }
         }
     }
     post {
-        success {
-            echo "Build completed successfully."
+        always {
+            echo "Build stage finished for branch ${env.BRANCH_NAME}"
         }
         failure {
             echo "Build failed!"
