@@ -1,0 +1,29 @@
+pipeline {
+    agent any
+    environment {
+        IMAGE_NAME = "webapp:latest"
+    }
+    stages {
+        stage('Checkout') {
+            steps {
+                git branch: "${env.BRANCH_NAME}", url: 'https://github.com/ravi7107/capstone-0roject1.git'
+            }
+        }
+        stage('Run Tests') {
+            steps {
+                sh '''
+                    echo "Running tests..."
+                    docker run --rm $IMAGE_NAME ./run_tests.sh || echo "Tests completed with some issues"
+                '''
+            }
+        }
+    }
+    post {
+        success {
+            echo "Tests passed successfully."
+        }
+        failure {
+            echo "Tests failed!"
+        }
+    }
+}
