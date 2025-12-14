@@ -1,8 +1,4 @@
-# Use official Apache image
-FROM httpd:2.4
-
-# Copy website files into Apache document root
-COPY . /usr/local/apache2/htdocs/
-
-# Expose port 80
+FROM hshar/webapp
+COPY . /var/www/html
+WORKDIR /var/www/html
 EXPOSE 80
